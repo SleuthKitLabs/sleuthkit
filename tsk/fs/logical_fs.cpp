@@ -754,6 +754,7 @@ add_directory_to_cache(LOGICALFS_INFO *logical_fs_info, const TSK_TCHAR *path, T
 	return TSK_OK;
 }
 
+#ifdef TSK_WIN32
 bool case_insensitive_compare(const std::wstring& a, const std::wstring& b) {
 	return std::lexicographical_compare(
 		a.begin(), a.end(),
@@ -763,6 +764,17 @@ bool case_insensitive_compare(const std::wstring& a, const std::wstring& b) {
 		}
 	);
 }
+#else
+bool case_insensitive_compare(const std::string& a, const std::string& b) {
+	return std::lexicographical_compare(
+		a.begin(), a.end(),
+		b.begin(), b.end(),
+		[](char a, char b) {
+			return tolower(a) < tolower(b);
+		}
+	);
+}
+#endif
 
 /*
  * Main recursive method for walking the directories. Will load and sort all directories found
